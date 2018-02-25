@@ -32,6 +32,11 @@ Route::prefix('niquelino')->group(function () {
             return $niquelinoController ->getLucroHoje();
         })->middleware('auth')->name('niquelino.charts.lucrohoje');
 
+        Route::get('/getLucroHojeMini', function(){
+            $niquelinoController = app()->make('\App\Http\Controllers\Niquelino\NiquelinoController');
+            return $niquelinoController ->getLucroHojeMini();
+        })->middleware('auth')->name('niquelino.charts.lucrohojemini');
+
     });
 
 });

@@ -1,15 +1,5 @@
 <template>
-
-    <div class="col col-lg-12">
-        <div class="card text-dark border-blue-grey-darken-4">
-            <div class="card-header border-blue-grey-darken-4 plataforma-titulo-cartao">Niquelino - Lucro por dia</div>
-            <div class="card-body plataforma-corpo-cartao" id="divChartLucroDia">
-                    <div v-show="!isLoading">
-                        <canvas id="chartLucroHora"></canvas>
-                    </div>
-            </div>
-        </div>
-    </div>
+    <canvas id="chartLucroDiaMini" width="130" height="33"></canvas>
 </template>
 
 <script>
@@ -38,10 +28,10 @@
             carregarDados () {
                 let t = this;
                 t.showLoading();
-                this.$http.get('/niquelino/charts/getLucroPorDia').then(
+                this.$http.get('/niquelino/charts/getLucroHojeMini').then(
                     response=> {
                         t.data = response.body.lucros;
-                        t.labels = response.body.dias;
+                        t.labels = response.body.horas;
                         t.montarGrafico();
                         t.hideLoading();
                     },
@@ -52,38 +42,35 @@
             },
             montarGrafico () {
                 let t = this;
-                let chartLucroDia = document.getElementById("chartLucroHora").getContext('2d');
-
-                let gradient = chartLucroDia.createLinearGradient(0, 0, 0, 450);
-
-                gradient.addColorStop(0, 'rgba(77, 182, 172, 1)');
-                gradient.addColorStop(0.5, 'rgba(224, 242, 241, 1)');
-                gradient.addColorStop(1, 'rgba(179, 229, 252, 1)');
+                let chartLucroDia = document.getElementById("chartLucroDiaMini").getContext('2d');
 
                 let chart = new Chart(chartLucroDia, {
-                    type: 'line',
+                    type: 'bar',
                     data: {
                         labels: t.labels,
                         datasets: [{
-                            label: 'Lucro',
+                            label: 'Lucro (R$)',
                             data: t.data,
-                            pointBackgroundColor: '#26a69a',
-                            borderColor: '#004d40',
-                            backgroundColor: gradient,
-                            borderWidth: 1.6,
-                            lineTension: 0.5,
-                            fill: true
+                            pointBackgroundColor: '#263238',
+                            borderColor: '#263238',
+                            backgroundColor: '#263238',
+                            borderWidth: 0.5,
+                            fill: false
                         }]
                     },
                     options: {
                         scales: {
                             yAxes: [{
+                                display: false,
                                 ticks: {
                                     beginAtZero:true
                                 }
+                            }],
+                            xAxes: [{
+                                display: false
                             }]
                         },
-                        responsive: true,
+                        responsive: false,
                         tooltips: {
                             enabled: false
                         },

@@ -69,4 +69,38 @@ class NiquelinoController extends Controller {
         return $this->resposta($arrayLucro, 'json');
     }
 
+    public function getLucroHojeMini () {
+        $lucros = [];
+        $horas = [];
+        $contador = '23';
+
+        $hora = date('H', strtotime("-23 hour"));
+
+        while(sizeof($horas)!= 24) {
+
+            if($hora < 0) {
+                $hora = $hora + 24;
+            }
+            else if ($hora == 24) {
+                $hora = '0';
+            }
+
+            $string = "-".$contador." hour";
+
+            $proximaData = date('d/m/Y H', strtotime($string));
+
+
+            $lucroDia = Niquelino::getLucroBitCoin(false, null, $proximaData);
+            $lucroDiaEmReais = Util::convertBtcToReal($lucroDia);
+            array_push($lucros, $lucroDiaEmReais['brl']);
+            array_push($horas, $hora.":00");
+            $hora++;
+            $contador--;
+        }
+
+        $arrayLucro = array("lucros" => $lucros, "horas" => $horas);
+
+        return $this->resposta($arrayLucro, 'json');
+    }
+
 }

@@ -1,6 +1,8 @@
 
 // Fonts
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
+@import url('https://fonts.googleapis.com/css?family=Viga');
+@import url('https://fonts.googleapis.com/css?family=Kanit');
 
 // Variables
 @import "variables";
@@ -12,3 +14,17 @@
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
+
+.plataforma-titulo-cartao {
+  font-family: 'Viga', sans-serif;
+  text-transform: uppercase;
+  font-size: 18pt;
+  color: #37474f;
+}
+
+.plataforma-corpo-cartao {
+  font-family: 'Kanit', sans-serif;
+  color: #351f00;
+  font-weight: 450;
+}
+

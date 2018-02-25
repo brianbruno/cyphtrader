@@ -19,6 +19,7 @@ window.VueResource = require('vue-resource');
 
 Vue.component('niquelino-lucro-dia', require('./components/charts/niquelino-lucro-dia.vue'));
 Vue.component('niquelino-lucro-hoje', require('./components/charts/niquelino-lucro-hoje.vue'));
+Vue.component('niquelino-mini-lucro-dia', require('./components/charts/niquelino-mini-lucro-dia.vue'));
 
 const app = new Vue({
     el: '#app'

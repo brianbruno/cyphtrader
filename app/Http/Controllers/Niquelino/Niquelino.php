@@ -64,7 +64,6 @@ class Niquelino extends Controller {
         return $totalUsd;
     }
 
-
     public static function getUltimasVendas () {
 
         bcscale(8);
@@ -85,4 +84,32 @@ class Niquelino extends Controller {
 
         return $vendas;
     }
+
+    public static function getOrdensVenda($data = null) {
+        $ordens = DB::connection('mysql_niquelino')->table('ORDERS')
+            ->select(DB::raw('count(TYPE) AS ORDERS'))
+            ->where('TYPE', 'LIMIT_SELL')
+            ->whereNotNull('CLOSED')
+            ->when($data, function ($query) use ($data) {
+                if(isset($data))
+                    return $query->where(DB::raw("date_format(ORDERS.CLOSED,'%d/%m/%Y')"), $data);
+            })
+            ->get();
+
+        return $ordens[0]->ORDERS;
+    }
+
+    public static function getOrdensCompra($data = null) {
+        $ordens = DB::connection('mysql_niquelino')->table('ORDERS')
+            ->select(DB::raw('count(TYPE) AS ORDERS'))
+            ->where('TYPE', 'LIMIT_SELL')
+            ->when($data, function ($query) use ($data) {
+                if(isset($data))
+                    return $query->where(DB::raw("date_format(ORDERS.OPENED,'%d/%m/%Y')"), $data);
+            })
+            ->get();
+
+        return $ordens[0]->ORDERS;
+    }
+
 }
