@@ -57,12 +57,14 @@
         </nav>
     </header>
     <main>
-        <div class="container">
+        <div class="container-fluid" id="app">
             @yield('content')
         </div>
     </main>
 </div>
 <!-- Scripts -->
 <script src="{{ asset('public/js/app.js') }}"></script>
+<!-- FontAwesome -->
+<script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 </body>
 </html>

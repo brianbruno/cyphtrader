@@ -8,6 +8,8 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
+window.Chart = require('chart.js');
+window.VueResource = require('vue-resource');
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -15,7 +17,8 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('niquelino-lucro-dia', require('./components/charts/niquelino-lucro-dia.vue'));
+Vue.component('niquelino-lucro-hoje', require('./components/charts/niquelino-lucro-hoje.vue'));
 
 const app = new Vue({
     el: '#app'

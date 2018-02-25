@@ -17,6 +17,25 @@ Route::name('plataforma.')->group(function () {
         return view('plataforma.index');
     })->name('dashboard')->middleware('auth');;
 });
+Route::prefix('niquelino')->group(function () {
+
+    Route::prefix('charts')->group(function () {
+
+
+        Route::get('/getLucroPorDia', function(){
+            $niquelinoController = app()->make('\App\Http\Controllers\Niquelino\NiquelinoController');
+            return $niquelinoController ->getLucroPorDia();
+        })->middleware('auth')->name('niquelino.charts.lucropordia');
+
+        Route::get('/getLucroHoje', function(){
+            $niquelinoController = app()->make('\App\Http\Controllers\Niquelino\NiquelinoController');
+            return $niquelinoController ->getLucroHoje();
+        })->middleware('auth')->name('niquelino.charts.lucrohoje');
+
+    });
+
+});
+
 
 Auth::routes();
 

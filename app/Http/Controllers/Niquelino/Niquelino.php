@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 class Niquelino extends Controller {
 
 
-    public static function getLucroBitCoin ($json= true, $data = null) {
+    public static function getLucroBitCoin ($json= true, $data = null, $hora = null) {
         bcscale(8);
         $ganhos = DB::connection('mysql_niquelino')->table('ORDERS')
             ->select(DB::raw('(QUANTITY * RATE) AS GANHO'))
@@ -26,8 +26,14 @@ class Niquelino extends Controller {
                 if(isset($data))
                     return $query->where(DB::raw("date_format(ORDERS.CLOSED,'%d/%m/%Y')"), $data);
             })
+            ->when($hora, function ($query) use ($hora) {
+                if(isset($hora))
+                    return $query->where(DB::raw("date_format(ORDERS.CLOSED,'%d/%m/%Y %H')"), $hora);
+            })
             ->get();
+
         $lucro = 0.0;
+
         foreach ($ganhos as $ganho) {
             $lucro = $lucro + $ganho->GANHO;
         }
@@ -58,4 +64,25 @@ class Niquelino extends Controller {
         return $totalUsd;
     }
 
+
+    public static function getUltimasVendas () {
+
+        bcscale(8);
+
+        $ordens = DB::connection('mysql_niquelino')->table('ORDERS')
+            ->select('MARKET', 'QUANTITY', DB::raw('(QUANTITY * RATE) AS GANHO'), DB::raw('DATE_FORMAT(CLOSED, "%d/%m/%Y %H:%i:%s") as CLOSED'))
+            ->latest('CLOSED')
+            ->where('TYPE', 'LIMIT_SELL')
+            ->whereNotNull('CLOSED')
+            ->limit(3)
+            ->get();
+
+        $vendas = $ordens;
+
+        foreach ($vendas as $venda) {
+            $venda->GANHO = bcmul($venda->GANHO, '0.01000000');
+        }
+
+        return $vendas;
+    }
 }
