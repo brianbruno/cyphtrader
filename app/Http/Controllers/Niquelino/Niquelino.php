@@ -112,4 +112,13 @@ class Niquelino extends Controller {
         return $ordens[0]->ORDERS;
     }
 
+    public static function getProfit() {
+
+        $lucro = Niquelino::getLucroBitCoin(true, null);
+        $a = bcmul($lucro, '100.00000000');
+        $b = bcdiv($a, '0.45000000', 2);//valor negociado
+
+        return $b;
+    }
+
 }

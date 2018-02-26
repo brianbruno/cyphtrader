@@ -2,7 +2,7 @@
 
     <div class="col col-lg-12">
         <div class="card text-dark border-blue-grey-darken-4">
-            <div class="card-header border-blue-grey-darken-4 plataforma-titulo-cartao">Niquelino - Lucro 24 Horas</div>
+            <div class="card-header border-blue-grey-darken-4 plataforma-titulo-cartao">Lucro 24 Horas</div>
             <div class="card-body plataforma-corpo-cartao" id="divChartLucroDia">
                     <div v-show="!isLoading">
                         <canvas id="chartLucroDia"></canvas>
