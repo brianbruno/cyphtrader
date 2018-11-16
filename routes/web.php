@@ -14,7 +14,7 @@
 
 Route::name('plataforma.')->group(function () {
     Route::get('/', function () {
-        return view('plataforma.index');
+        return view('platform.index');
     })->name('dashboard')->middleware('auth');;
 });
 Route::prefix('niquelino')->group(function () {
