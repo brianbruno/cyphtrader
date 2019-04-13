@@ -13,10 +13,27 @@
 
 
 Route::name('plataforma.')->group(function () {
+
     Route::get('/', function () {
         return view('platform.index');
-    })->name('dashboard')->middleware('auth');;
+    })->name('dashboard')->middleware('auth');
+
+    Route::middleware(['auth'])->group(function () {
+
+        Route::namespace('Administrativo')->group(function () {
+
+            Route::prefix('administrativo')->group(function () {
+                Route::get('', 'AdminController@index')->name('administrativo');
+                Route::get('adicionar-usuario', 'AdminController@adicionarUsuario')->name('adicionar-usuario');
+                Route::post('salvar-usuario', 'AdminController@salvarUsuario')->name('usuario-salvar');
+            });
+        });
+
+    });
+
+
 });
+
 Route::prefix('niquelino')->group(function () {
 
     Route::prefix('charts')->group(function () {
@@ -41,7 +58,4 @@ Route::prefix('niquelino')->group(function () {
 
 });
 
-
 Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');

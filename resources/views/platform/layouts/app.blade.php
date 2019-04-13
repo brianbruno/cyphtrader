@@ -11,7 +11,7 @@
     <title>{{ config('app.name', 'CyphTrader') }}</title>
 
     <!-- Styles -->
-    <link href="{{ asset('public/css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
 </head>
 <body>
@@ -40,6 +40,9 @@
                             </a>
 
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                @if (Auth::user()->cargo >= 2)
+                                    <a class="dropdown-item" href="{{ url('administrativo') }}">Administrativo</a>
+                                @endif
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -58,13 +61,47 @@
     </header>
     <main>
         <div class="container-fluid" id="app">
+
+            <div class="container">
+                <br>
+                @if (!empty($resultado)  && $resultado['resultado'])
+                    @if (empty($resultado['mensagem']))
+                        <div class="alert alert-success">
+                            <p><strong>Operação realizada com sucesso!</strong></p>
+                        </div>
+                    @else
+                        <div class="alert alert-success">
+                            <p><strong>{{ $resultado['mensagem'] }}</strong></p>
+                        </div>
+                    @endif
+                @endif
+
+                @if (!empty($resultado)  && !$resultado['resultado'])
+                    @if (empty($resultado['mensagem']))
+                        <div class="alert alert-success">
+                            <p><strong>Ocorreu um erro ao realizar a operação!</strong></p>
+                        </div>
+                    @else
+                        <div class="alert alert-danger">
+                            <p><strong>{{ $resultado['mensagem'] }}</strong></p>
+                        </div>
+                    @endif
+
+                @endif
+            </div>
             @yield('content')
         </div>
     </main>
 </div>
 <!-- Scripts -->
-<script src="{{ asset('public/js/app.js') }}"></script>
+<script src="{{ asset('js/app.js') }}"></script>
 <!-- FontAwesome -->
 <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+
+<script>
+    $(function () {
+        $('select').selectpicker();
+    });
+</script>
 </body>
 </html>

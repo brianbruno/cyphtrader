@@ -18,17 +18,17 @@ class Niquelino extends Controller {
 
     public static function getLucroBitCoin ($json= true, $data = null, $hora = null) {
         bcscale(8);
-        $ganhos = DB::connection('mysql_niquelino')->table('ORDERS')
+        $ganhos = DB::connection('mysql_niquelino')->table('orders')
             ->select(DB::raw('(QUANTITY * RATE) AS GANHO'))
             ->where('TYPE', 'LIMIT_SELL')
             ->whereNotNull('CLOSED')
             ->when($data, function ($query) use ($data) {
                 if(isset($data))
-                    return $query->where(DB::raw("date_format(ORDERS.CLOSED,'%d/%m/%Y')"), $data);
+                    return $query->where(DB::raw("date_format(orders.CLOSED,'%d/%m/%Y')"), $data);
             })
             ->when($hora, function ($query) use ($hora) {
                 if(isset($hora))
-                    return $query->where(DB::raw("date_format(ORDERS.CLOSED,'%d/%m/%Y %H')"), $hora);
+                    return $query->where(DB::raw("date_format(orders.CLOSED,'%d/%m/%Y %H')"), $hora);
             })
             ->get();
 

@@ -10,8 +10,8 @@
                             <div class="card-header border-blue-grey-darken-4"><span class="plataforma-titulo-cartao">Lucro Niquelino</span><niquelino-mini-lucro-dia class="float-right"></niquelino-mini-lucro-dia></div>
                             <div class="card-body plataforma-corpo-cartao">
                                 <i class="fab fa-bitcoin fa-5x float-right"></i>
-                                <h2 class="card-title">0,000633 BTC</h2>
-                                <p class="card-text">R$ 256,36 | U$ 45,63 | 10%</p>
+                                <h2 class="card-title">0,000000 BTC</h2>
+                                <p class="card-text">R$ 0,00 | U$ 0,00 | 0%</p>
                             </div>
                         </div>
                     </div>
@@ -21,7 +21,7 @@
                             <div class="card-header border-blue-grey-darken-4 plataforma-titulo-cartao">Ordens executadas hoje</div>
                             <div class="card-body plataforma-corpo-cartao">
                                 <i class="fas fa-exchange-alt fa-5x float-right"></i>
-                                <h1>5</h1>
+                                <h1>0</h1>
                             </div>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
                             <div class="card-header border-blue-grey-darken-4 plataforma-titulo-cartao">Ordens em aberto</div>
                             <div class="card-body plataforma-corpo-cartao">
                                 <i class="fas fa-search fa-5x float-right"></i>
-                                <h1>6</h1>
+                                <h1></h1>
                             </div>
                         </div>
                     </div>

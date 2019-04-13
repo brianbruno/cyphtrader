@@ -1,0 +1,8 @@
+Criar o banco de dados
+
+php artisan migrate
+
+Criar usuário admin
+
+php artisan db:seed
+
