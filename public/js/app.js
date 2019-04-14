@@ -5011,6 +5011,115 @@ module.exports = g;
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -15605,7 +15714,7 @@ return jQuery;
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15707,115 +15816,6 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
 
 /***/ }),
 /* 6 */
@@ -31119,7 +31119,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(142);
-module.exports = __webpack_require__(183);
+module.exports = __webpack_require__(187);
 
 
 /***/ }),
@@ -31140,7 +31140,7 @@ window.Vue = __webpack_require__(166);
 window.Chart = __webpack_require__(170);
 window.VueResource = __webpack_require__(172);
 
-window.Noty = __webpack_require__(188);
+window.Noty = __webpack_require__(174);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -31148,10 +31148,10 @@ window.Noty = __webpack_require__(188);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('niquelino-lucro-dia', __webpack_require__(174));
-Vue.component('niquelino-lucro-hoje', __webpack_require__(177));
-Vue.component('niquelino-mini-lucro-dia', __webpack_require__(180));
-Vue.component('notificacao', __webpack_require__(189));
+Vue.component('niquelino-lucro-dia', __webpack_require__(175));
+Vue.component('niquelino-lucro-hoje', __webpack_require__(178));
+Vue.component('niquelino-mini-lucro-dia', __webpack_require__(181));
+Vue.component('notificacao', __webpack_require__(184));
 
 var app = new Vue({
   el: '#app'
@@ -31172,7 +31172,7 @@ window.Popper = __webpack_require__(7).default;
  */
 
 try {
-  window.$ = window.jQuery = __webpack_require__(3);
+  window.$ = window.jQuery = __webpack_require__(4);
 
   __webpack_require__(145);
 } catch (e) {}
@@ -48343,7 +48343,7 @@ if (token) {
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-   true ? factory(exports, __webpack_require__(3), __webpack_require__(7)) :
+   true ? factory(exports, __webpack_require__(4), __webpack_require__(7)) :
   typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'popper.js'], factory) :
   (global = global || self, factory(global.bootstrap = {}, global.jQuery, global.Popper));
 }(this, function (exports, $, Popper) { 'use strict';
@@ -52790,7 +52790,7 @@ module.exports = __webpack_require__(147);
 var utils = __webpack_require__(1);
 var bind = __webpack_require__(8);
 var Axios = __webpack_require__(149);
-var defaults = __webpack_require__(4);
+var defaults = __webpack_require__(5);
 
 /**
  * Create an instance of Axios
@@ -52873,7 +52873,7 @@ function isSlowBuffer (obj) {
 "use strict";
 
 
-var defaults = __webpack_require__(4);
+var defaults = __webpack_require__(5);
 var utils = __webpack_require__(1);
 var InterceptorManager = __webpack_require__(158);
 var dispatchRequest = __webpack_require__(159);
@@ -53412,7 +53412,7 @@ module.exports = InterceptorManager;
 var utils = __webpack_require__(1);
 var transformData = __webpack_require__(160);
 var isCancel = __webpack_require__(12);
-var defaults = __webpack_require__(4);
+var defaults = __webpack_require__(5);
 var isAbsoluteURL = __webpack_require__(161);
 var combineURLs = __webpack_require__(162);
 
@@ -53677,7 +53677,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
   if (root === undefined && window !== undefined) root = window;
   if (true) {
     // AMD. Register as an anonymous module unless amdModuleId is set
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3)], __WEBPACK_AMD_DEFINE_RESULT__ = (function (a0) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(4)], __WEBPACK_AMD_DEFINE_RESULT__ = (function (a0) {
       return (factory(a0));
     }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -85488,601 +85488,6 @@ if (typeof window !== 'undefined' && window.Vue) {
 /* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var disposed = false
-var normalizeComponent = __webpack_require__(5)
-/* script */
-var __vue_script__ = __webpack_require__(175)
-/* template */
-var __vue_template__ = __webpack_require__(176)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/charts/niquelino-lucro-dia.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1d9f6c1a", Component.options)
-  } else {
-    hotAPI.reload("data-v-1d9f6c1a", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 175 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    mounted: function mounted() {
-        var t = this;
-        t.carregarDados();
-    },
-    data: function data() {
-        return {
-            isLoading: false,
-            isLoadingHora: false,
-            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-            data: [12, 19, 3, 5, 2, 3]
-        };
-    },
-
-    methods: {
-        showLoading: function showLoading() {
-            this.isLoading = true;
-        },
-        hideLoading: function hideLoading() {
-            this.isLoading = false;
-        },
-        carregarDados: function carregarDados() {
-            var t = this;
-            t.showLoading();
-            this.$http.get('/niquelino/charts/getLucroPorDia').then(function (response) {
-                t.data = response.body.lucros;
-                t.labels = response.body.dias;
-                t.montarGrafico();
-                t.hideLoading();
-            }, function (error) {
-                console.log(error);
-            });
-        },
-        montarGrafico: function montarGrafico() {
-            var t = this;
-            var chartLucroDia = document.getElementById("chartLucroHora").getContext('2d');
-
-            var gradient = chartLucroDia.createLinearGradient(0, 0, 0, 450);
-
-            gradient.addColorStop(0, 'rgba(77, 182, 172, 1)');
-            gradient.addColorStop(0.5, 'rgba(224, 242, 241, 1)');
-            gradient.addColorStop(1, 'rgba(179, 229, 252, 1)');
-
-            var chart = new Chart(chartLucroDia, {
-                type: 'line',
-                data: {
-                    labels: t.labels,
-                    datasets: [{
-                        label: 'Lucro',
-                        data: t.data,
-                        pointBackgroundColor: '#26a69a',
-                        borderColor: '#004d40',
-                        backgroundColor: gradient,
-                        borderWidth: 1.6,
-                        lineTension: 0.5,
-                        fill: true
-                    }]
-                },
-                options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    },
-                    responsive: true,
-                    tooltips: {
-                        enabled: true
-                    },
-                    legend: {
-                        display: false,
-                        position: "bottom",
-                        labels: {
-                            fontColor: '#004d40',
-                            fontSize: 12
-                        }
-                    }
-                }
-            });
-        }
-    }
-});
-
-/***/ }),
-/* 176 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "col col-lg-12" }, [
-    _c("div", { staticClass: "card text-dark border-blue-grey-darken-4" }, [
-      _c(
-        "div",
-        {
-          staticClass:
-            "card-header border-blue-grey-darken-4 plataforma-titulo-cartao"
-        },
-        [_vm._v("Lucro por dia")]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "card-body plataforma-corpo-cartao",
-          attrs: { id: "divChartLucroDia" }
-        },
-        [
-          _c(
-            "div",
-            {
-              directives: [
-                {
-                  name: "show",
-                  rawName: "v-show",
-                  value: !_vm.isLoading,
-                  expression: "!isLoading"
-                }
-              ]
-            },
-            [_c("canvas", { attrs: { id: "chartLucroHora" } })]
-          )
-        ]
-      )
-    ])
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-1d9f6c1a", module.exports)
-  }
-}
-
-/***/ }),
-/* 177 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(5)
-/* script */
-var __vue_script__ = __webpack_require__(178)
-/* template */
-var __vue_template__ = __webpack_require__(179)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/charts/niquelino-lucro-hoje.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-f50bb858", Component.options)
-  } else {
-    hotAPI.reload("data-v-f50bb858", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 178 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    mounted: function mounted() {
-        var t = this;
-        t.carregarDados();
-    },
-    data: function data() {
-        return {
-            isLoading: false,
-            isLoadingHora: false,
-            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-            data: [12, 19, 3, 5, 2, 3]
-        };
-    },
-
-    methods: {
-        showLoading: function showLoading() {
-            this.isLoading = true;
-        },
-        hideLoading: function hideLoading() {
-            this.isLoading = false;
-        },
-        carregarDados: function carregarDados() {
-            var _this = this;
-
-            var t = this;
-            t.showLoading();
-            this.$http.get('/niquelino/charts/getLucroHoje').then(function (response) {
-                t.data = response.body.lucros;
-                t.labels = response.body.horas;
-                t.montarGrafico();
-                t.hideLoading();
-            }, function (error) {
-                _this.$root.$emit('notificar', 'Ocorreu um erro ao buscar os dados. ', 'error');
-                // console.log(error);
-            });
-        },
-        montarGrafico: function montarGrafico() {
-            var t = this;
-            var chartLucroDia = document.getElementById("chartLucroDia").getContext('2d');
-
-            var gradient = chartLucroDia.createLinearGradient(0, 0, 0, 450);
-
-            gradient.addColorStop(0, 'rgba(77, 182, 172, 1)');
-            gradient.addColorStop(0.5, 'rgba(224, 242, 241, 1)');
-            gradient.addColorStop(1, 'rgba(179, 229, 252, 1)');
-
-            var chart = new Chart(chartLucroDia, {
-                type: 'line',
-                data: {
-                    labels: t.labels,
-                    datasets: [{
-                        label: 'Lucro',
-                        data: t.data,
-                        pointBackgroundColor: '#26a69a',
-                        borderColor: '#004d40',
-                        backgroundColor: gradient,
-                        borderWidth: 1.6,
-                        lineTension: 0.2,
-                        fill: true
-                    }]
-                },
-                options: {
-                    scales: {
-                        yAxes: [{
-                            display: false,
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    },
-                    responsive: true,
-                    tooltips: {
-                        enabled: true
-                    },
-                    legend: {
-                        display: false,
-                        position: "bottom",
-                        labels: {
-                            fontColor: '#004d40',
-                            fontSize: 12
-                        }
-                    }
-                }
-            });
-        }
-    }
-});
-
-/***/ }),
-/* 179 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "col col-lg-12" }, [
-    _c("div", { staticClass: "card text-dark border-blue-grey-darken-4" }, [
-      _c(
-        "div",
-        {
-          staticClass:
-            "card-header border-blue-grey-darken-4 plataforma-titulo-cartao"
-        },
-        [_vm._v("Lucro 24 Horas")]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "card-body plataforma-corpo-cartao",
-          attrs: { id: "divChartLucroDia" }
-        },
-        [
-          _c(
-            "div",
-            {
-              directives: [
-                {
-                  name: "show",
-                  rawName: "v-show",
-                  value: !_vm.isLoading,
-                  expression: "!isLoading"
-                }
-              ]
-            },
-            [_c("canvas", { attrs: { id: "chartLucroDia" } })]
-          )
-        ]
-      )
-    ])
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-f50bb858", module.exports)
-  }
-}
-
-/***/ }),
-/* 180 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(5)
-/* script */
-var __vue_script__ = __webpack_require__(181)
-/* template */
-var __vue_template__ = __webpack_require__(182)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/charts/niquelino-mini-lucro-dia.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-61a48f28", Component.options)
-  } else {
-    hotAPI.reload("data-v-61a48f28", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 181 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    mounted: function mounted() {
-        var t = this;
-        t.carregarDados();
-    },
-    data: function data() {
-        return {
-            isLoading: false,
-            isLoadingHora: false,
-            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-            data: [12, 19, 3, 5, 2, 3]
-        };
-    },
-
-    methods: {
-        showLoading: function showLoading() {
-            this.isLoading = true;
-        },
-        hideLoading: function hideLoading() {
-            this.isLoading = false;
-        },
-        carregarDados: function carregarDados() {
-            var _this = this;
-
-            var t = this;
-            t.showLoading();
-            this.$http.get('/niquelino/charts/getLucroHojeMini').then(function (response) {
-                t.data = response.body.lucros;
-                t.labels = response.body.horas;
-                t.montarGrafico();
-                t.hideLoading();
-            }, function (error) {
-                _this.$root.$emit('notificar', 'Ocorreu um erro ao buscar os dados. ' + error, 'error');
-                console.log(error);
-            });
-        },
-        montarGrafico: function montarGrafico() {
-            var t = this;
-            var chartLucroDia = document.getElementById("chartLucroDiaMini").getContext('2d');
-
-            var chart = new Chart(chartLucroDia, {
-                type: 'bar',
-                data: {
-                    labels: t.labels,
-                    datasets: [{
-                        label: 'Lucro (R$)',
-                        data: t.data,
-                        pointBackgroundColor: '#263238',
-                        borderColor: '#263238',
-                        backgroundColor: '#263238',
-                        borderWidth: 0.5,
-                        fill: false
-                    }]
-                },
-                options: {
-                    scales: {
-                        yAxes: [{
-                            display: false,
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }],
-                        xAxes: [{
-                            display: false
-                        }]
-                    },
-                    responsive: false,
-                    tooltips: {
-                        enabled: false
-                    },
-                    legend: {
-                        display: false,
-                        position: "bottom",
-                        labels: {
-                            fontColor: '#004d40',
-                            fontSize: 12
-                        }
-                    }
-                }
-            });
-        }
-    }
-});
-
-/***/ }),
-/* 182 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("canvas", {
-    attrs: { id: "chartLucroDiaMini", width: "130", height: "33" }
-  })
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-61a48f28", module.exports)
-  }
-}
-
-/***/ }),
-/* 183 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 184 */,
-/* 185 */,
-/* 186 */,
-/* 187 */,
-/* 188 */
-/***/ (function(module, exports, __webpack_require__) {
-
 /* 
   @package NOTY - Dependency-free notification library 
   @version version: 3.2.0-beta 
@@ -89209,15 +88614,600 @@ module.exports = g;
 //# sourceMappingURL=noty.js.map
 
 /***/ }),
-/* 189 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(5)
+var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(190)
+var __vue_script__ = __webpack_require__(176)
 /* template */
-var __vue_template__ = __webpack_require__(191)
+var __vue_template__ = __webpack_require__(177)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/charts/niquelino-lucro-dia.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1d9f6c1a", Component.options)
+  } else {
+    hotAPI.reload("data-v-1d9f6c1a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 176 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    mounted: function mounted() {
+        var t = this;
+        t.carregarDados();
+    },
+    data: function data() {
+        return {
+            isLoading: false,
+            isLoadingHora: false,
+            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+            data: [12, 19, 3, 5, 2, 3]
+        };
+    },
+
+    methods: {
+        showLoading: function showLoading() {
+            this.isLoading = true;
+        },
+        hideLoading: function hideLoading() {
+            this.isLoading = false;
+        },
+        carregarDados: function carregarDados() {
+            var t = this;
+            t.showLoading();
+            this.$http.get('/niquelino/charts/getLucroPorDia').then(function (response) {
+                t.data = response.body.lucros;
+                t.labels = response.body.dias;
+                t.montarGrafico();
+                t.hideLoading();
+            }, function (error) {
+                console.log(error);
+            });
+        },
+        montarGrafico: function montarGrafico() {
+            var t = this;
+            var chartLucroDia = document.getElementById("chartLucroHora").getContext('2d');
+
+            var gradient = chartLucroDia.createLinearGradient(0, 0, 0, 450);
+
+            gradient.addColorStop(0, 'rgba(77, 182, 172, 1)');
+            gradient.addColorStop(0.5, 'rgba(224, 242, 241, 1)');
+            gradient.addColorStop(1, 'rgba(179, 229, 252, 1)');
+
+            var chart = new Chart(chartLucroDia, {
+                type: 'line',
+                data: {
+                    labels: t.labels,
+                    datasets: [{
+                        label: 'Lucro',
+                        data: t.data,
+                        pointBackgroundColor: '#26a69a',
+                        borderColor: '#004d40',
+                        backgroundColor: gradient,
+                        borderWidth: 1.6,
+                        lineTension: 0.5,
+                        fill: true
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    },
+                    responsive: true,
+                    tooltips: {
+                        enabled: true
+                    },
+                    legend: {
+                        display: false,
+                        position: "bottom",
+                        labels: {
+                            fontColor: '#004d40',
+                            fontSize: 12
+                        }
+                    }
+                }
+            });
+        }
+    }
+});
+
+/***/ }),
+/* 177 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "col col-lg-12" }, [
+    _c("div", { staticClass: "card text-dark border-blue-grey-darken-4" }, [
+      _c(
+        "div",
+        {
+          staticClass:
+            "card-header border-blue-grey-darken-4 plataforma-titulo-cartao"
+        },
+        [_vm._v("Lucro por dia")]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "card-body plataforma-corpo-cartao",
+          attrs: { id: "divChartLucroDia" }
+        },
+        [
+          _c(
+            "div",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: !_vm.isLoading,
+                  expression: "!isLoading"
+                }
+              ]
+            },
+            [_c("canvas", { attrs: { id: "chartLucroHora" } })]
+          )
+        ]
+      )
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1d9f6c1a", module.exports)
+  }
+}
+
+/***/ }),
+/* 178 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(179)
+/* template */
+var __vue_template__ = __webpack_require__(180)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/charts/niquelino-lucro-hoje.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-f50bb858", Component.options)
+  } else {
+    hotAPI.reload("data-v-f50bb858", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 179 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    mounted: function mounted() {
+        var t = this;
+        t.carregarDados();
+    },
+    data: function data() {
+        return {
+            isLoading: false,
+            isLoadingHora: false,
+            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+            data: [12, 19, 3, 5, 2, 3]
+        };
+    },
+
+    methods: {
+        showLoading: function showLoading() {
+            this.isLoading = true;
+        },
+        hideLoading: function hideLoading() {
+            this.isLoading = false;
+        },
+        carregarDados: function carregarDados() {
+            var _this = this;
+
+            var t = this;
+            t.showLoading();
+            this.$http.get('/niquelino/charts/getLucroHoje').then(function (response) {
+                t.data = response.body.lucros;
+                t.labels = response.body.horas;
+                t.montarGrafico();
+                t.hideLoading();
+            }, function (error) {
+                _this.$root.$emit('notificar', 'Ocorreu um erro ao buscar os dados. ', 'error');
+                // console.log(error);
+            });
+        },
+        montarGrafico: function montarGrafico() {
+            var t = this;
+            var chartLucroDia = document.getElementById("chartLucroDia").getContext('2d');
+
+            var gradient = chartLucroDia.createLinearGradient(0, 0, 0, 450);
+
+            gradient.addColorStop(0, 'rgba(77, 182, 172, 1)');
+            gradient.addColorStop(0.5, 'rgba(224, 242, 241, 1)');
+            gradient.addColorStop(1, 'rgba(179, 229, 252, 1)');
+
+            var chart = new Chart(chartLucroDia, {
+                type: 'line',
+                data: {
+                    labels: t.labels,
+                    datasets: [{
+                        label: 'Lucro',
+                        data: t.data,
+                        pointBackgroundColor: '#26a69a',
+                        borderColor: '#004d40',
+                        backgroundColor: gradient,
+                        borderWidth: 1.6,
+                        lineTension: 0.2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            display: false,
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    },
+                    responsive: true,
+                    tooltips: {
+                        enabled: true
+                    },
+                    legend: {
+                        display: false,
+                        position: "bottom",
+                        labels: {
+                            fontColor: '#004d40',
+                            fontSize: 12
+                        }
+                    }
+                }
+            });
+        }
+    }
+});
+
+/***/ }),
+/* 180 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "col col-lg-12" }, [
+    _c("div", { staticClass: "card text-dark border-blue-grey-darken-4" }, [
+      _c(
+        "div",
+        {
+          staticClass:
+            "card-header border-blue-grey-darken-4 plataforma-titulo-cartao"
+        },
+        [_vm._v("Lucro 24 Horas")]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "card-body plataforma-corpo-cartao",
+          attrs: { id: "divChartLucroDia" }
+        },
+        [
+          _c(
+            "div",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: !_vm.isLoading,
+                  expression: "!isLoading"
+                }
+              ]
+            },
+            [_c("canvas", { attrs: { id: "chartLucroDia" } })]
+          )
+        ]
+      )
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-f50bb858", module.exports)
+  }
+}
+
+/***/ }),
+/* 181 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(182)
+/* template */
+var __vue_template__ = __webpack_require__(183)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/charts/niquelino-mini-lucro-dia.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-61a48f28", Component.options)
+  } else {
+    hotAPI.reload("data-v-61a48f28", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 182 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    mounted: function mounted() {
+        var t = this;
+        t.carregarDados();
+    },
+    data: function data() {
+        return {
+            isLoading: false,
+            isLoadingHora: false,
+            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+            data: [12, 19, 3, 5, 2, 3]
+        };
+    },
+
+    methods: {
+        showLoading: function showLoading() {
+            this.isLoading = true;
+        },
+        hideLoading: function hideLoading() {
+            this.isLoading = false;
+        },
+        carregarDados: function carregarDados() {
+            var _this = this;
+
+            var t = this;
+            t.showLoading();
+            this.$http.get('/niquelino/charts/getLucroHojeMini').then(function (response) {
+                t.data = response.body.lucros;
+                t.labels = response.body.horas;
+                t.montarGrafico();
+                t.hideLoading();
+            }, function (error) {
+                _this.$root.$emit('notificar', 'Ocorreu um erro ao buscar os dados. ' + error, 'error');
+                console.log(error);
+            });
+        },
+        montarGrafico: function montarGrafico() {
+            var t = this;
+            var chartLucroDia = document.getElementById("chartLucroDiaMini").getContext('2d');
+
+            var chart = new Chart(chartLucroDia, {
+                type: 'bar',
+                data: {
+                    labels: t.labels,
+                    datasets: [{
+                        label: 'Lucro (R$)',
+                        data: t.data,
+                        pointBackgroundColor: '#263238',
+                        borderColor: '#263238',
+                        backgroundColor: '#263238',
+                        borderWidth: 0.5,
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            display: false,
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }],
+                        xAxes: [{
+                            display: false
+                        }]
+                    },
+                    responsive: false,
+                    tooltips: {
+                        enabled: false
+                    },
+                    legend: {
+                        display: false,
+                        position: "bottom",
+                        labels: {
+                            fontColor: '#004d40',
+                            fontSize: 12
+                        }
+                    }
+                }
+            });
+        }
+    }
+});
+
+/***/ }),
+/* 183 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("canvas", {
+    attrs: { id: "chartLucroDiaMini", width: "130", height: "33" }
+  })
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-61a48f28", module.exports)
+  }
+}
+
+/***/ }),
+/* 184 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(185)
+/* template */
+var __vue_template__ = __webpack_require__(186)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -89256,7 +89246,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 190 */
+/* 185 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -89310,7 +89300,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 191 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -89328,6 +89318,12 @@ if (false) {
     require("vue-hot-reload-api")      .rerender("data-v-a7e7ec9a", module.exports)
   }
 }
+
+/***/ }),
+/* 187 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);
