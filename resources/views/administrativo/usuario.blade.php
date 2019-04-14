@@ -49,7 +49,7 @@
                                 </div>
 
                                 <div class="col-sm-12 col-md-6">
-                                    <label for="password-confirm">Robô</label>
+                                    <label for="id_user">Robô</label>
 
                                     <div>
                                         <select class="form-control selectpicker" data-live-search="true" name="id_user" id="id_user">
@@ -61,7 +61,59 @@
                                         </select>
                                     </div>
                                 </div>
+
                             </div>
+
+                            @if(!empty($usuario->id_user))
+
+                                <div class="form-group row">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="telegram_key">Telegram Key</label>
+                                        <input type="text" name="telegram_key" class="form-control" value="{{ $usuario->bot()->telegram_key }}" required
+                                               id="telegram_key" aria-describedby="descricao-help" maxlength="64" minlength="1">
+                                    </div>
+
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="telegram_channel">Telegram Channel</label>
+                                        <input type="text" name="telegram_channel" class="form-control" value="{{ $usuario->bot()->telegram_channel }}" required
+                                               id="telegram_channel" aria-describedby="descricao-help" maxlength="64" minlength="1">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="k">Key</label>
+                                        <input type="text" name="k" class="form-control" value="{{ $usuario->bot()->k }}" required
+                                               id="k" aria-describedby="descricao-help" maxlength="256" minlength="1">
+                                    </div>
+
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="s">Secret key</label>
+                                        <input type="text" name="s" class="form-control" value="{{ $usuario->bot()->s }}" required
+                                               id="s" aria-describedby="descricao-help" maxlength="256" minlength="1">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="btcusdt_stop_value">Stop Value</label>
+                                        <input type="number" name="btcusdt_stop_value" class="form-control" value="{{ $usuario->bot()->btcusdt_stop_value }}" required
+                                               id="btcusdt_stop_value" aria-describedby="descricao-help" step=".00000001">
+                                    </div>
+
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="active">Ativo</label>
+
+                                        <div>
+                                            <select class="form-control selectpicker" name="active" id="active">
+                                                <option @if($usuario->bot()->active == 0) selected @endif value="0">Não</option>
+                                                <option @if($usuario->bot()->active == 1) selected @endif value="1">Sim</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
                             <div class="text-right">
                                 <button type="submit" class="btn btn-secondary ">
                                     Salvar
@@ -74,4 +126,12 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('content')
+<script>
+
+
+
+</script>
 @endsection

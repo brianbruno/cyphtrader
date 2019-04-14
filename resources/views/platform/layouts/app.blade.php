@@ -104,11 +104,14 @@
 
 <!-- FontAwesome -->
 <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
 
 <script>
     $(function () {
         $('select').selectpicker();
     });
 </script>
+
+@yield('script')
 </body>
 </html>

@@ -38,7 +38,7 @@
             carregarDados () {
                 let t = this;
                 t.showLoading();
-                this.$http.get('/niquelino/charts/getLucroPorDia').then(
+                this.$http.get(process.env.MIX_APP_URL+'/niquelino/charts/getLucroPorDia').then(
                     response=> {
                         t.data = response.body.lucros;
                         t.labels = response.body.dias;

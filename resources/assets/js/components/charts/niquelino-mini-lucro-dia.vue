@@ -28,7 +28,7 @@
             carregarDados () {
                 let t = this;
                 t.showLoading();
-                this.$http.get('/niquelino/charts/getLucroHojeMini').then(
+                this.$http.get('/panel/niquelino/charts/getLucroHojeMini').then(
                     response=> {
                         t.data = response.body.lucros;
                         t.labels = response.body.horas;

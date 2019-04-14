@@ -27,4 +27,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function bot() {
+        return $this->hasOne('App\UserSistema', 'id', 'id_user')->first();
+    }
 }

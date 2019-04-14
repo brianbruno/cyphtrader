@@ -32,7 +32,7 @@
                     type: this.n_tipo,
                     layout: this.n_layout,
                     progressBar: true,
-                    timeout: 5000,
+                    timeout: 10000,
                     text: this.n_mensagem
                 }).show();
             },
