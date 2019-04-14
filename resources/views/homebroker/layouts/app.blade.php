@@ -18,26 +18,19 @@
 
 
 </head>
-<body>
+<body class="bg-blue-grey-darken-4">
 <div id="app">
     <header>
-        <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark navbar-laravel">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'CyphTrader') }}
+                    {{ config('app.name', 'CyphTrader') }} - Homebroker
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('homebroker') }}">Homebroker</a>
-                        </li>
-                    </ul>
-
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown">
@@ -66,7 +59,7 @@
         </nav>
     </header>
     <main>
-        <div class="container-fluid" id="app">
+        <div id="app">
             <notificacao></notificacao>
             <div class="container">
                 <br>

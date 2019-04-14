@@ -34,6 +34,15 @@ Route::name('plataforma.')->group(function () {
 
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::namespace('Homebroker')->group(function () {
+        Route::prefix('homebroker')->group(function () {
+            Route::get('', 'BrokerController@index')->name('homebroker');
+        });
+    });
+
+});
+
 Route::prefix('niquelino')->group(function () {
 
     Route::prefix('charts')->group(function () {

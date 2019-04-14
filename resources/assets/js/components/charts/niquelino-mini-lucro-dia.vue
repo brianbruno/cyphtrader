@@ -28,7 +28,7 @@
             carregarDados () {
                 let t = this;
                 t.showLoading();
-                this.$http.get('/panel/niquelino/charts/getLucroHojeMini').then(
+                this.$http.get(process.env.MIX_PREFIX+'/niquelino/charts/getLucroHojeMini').then(
                     response=> {
                         t.data = response.body.lucros;
                         t.labels = response.body.horas;
@@ -36,7 +36,7 @@
                         t.hideLoading();
                     },
                     error=>{
-                        this.$root.$emit('notificar', 'Ocorreu um erro ao buscar os dados. ' + error, 'error');
+                        this.$root.$emit('notificar', 'Ocorreu um erro ao buscar os dados. ', 'error');
                         console.log(error);
                     });
 
