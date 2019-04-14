@@ -46,7 +46,7 @@
                         t.hideLoading();
                     },
                     error=>{
-                        this.$root.$emit('notificar', 'Ocorreu um erro ao buscar os dados. ', 'error');
+                        this.$root.$emit('notificar', 'Ocorreu um erro ao buscar os dados do lucro hoje. ', 'error');
                         // console.log(error);
                     });
 

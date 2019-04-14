@@ -88922,7 +88922,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 t.montarGrafico();
                 t.hideLoading();
             }, function (error) {
-                _this.$root.$emit('notificar', 'Ocorreu um erro ao buscar os dados. ', 'error');
+                _this.$root.$emit('notificar', 'Ocorreu um erro ao buscar os dados do lucro hoje. ', 'error');
                 // console.log(error);
             });
         },

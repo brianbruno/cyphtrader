@@ -37,36 +37,42 @@ class NiquelinoController extends Controller {
     }
 
     public function getLucroHoje () {
-        $lucros = [];
-        $horas = [];
-        $contador = '23';
 
-        $hora = date('H', strtotime("-23 hour"));
+        try {
+            $lucros = [];
+            $horas = [];
+            $contador = '23';
 
-        while(sizeof($horas)!= 24) {
+            $hora = date('H', strtotime("-23 hour"));
 
-            if($hora < 0) {
-                $hora = $hora + 24;
+            while(sizeof($horas)!= 24) {
+
+                if($hora < 0) {
+                    $hora = $hora + 24;
+                }
+                else if ($hora == 24) {
+                    $hora = '0';
+                }
+
+                $string = "-".$contador." hour";
+
+                $proximaData = date('d/m/Y H', strtotime($string));
+
+
+                $lucroDia = Niquelino::getLucroBitCoin(false, null, $proximaData);
+                array_push($lucros, $lucroDia);
+                array_push($horas, $hora.":00");
+                $hora++;
+                $contador--;
             }
-            else if ($hora == 24) {
-                $hora = '0';
-            }
 
-            $string = "-".$contador." hour";
+            $arrayRetorno = array("lucros" => $lucros, "horas" => $horas);
+        } catch (\Exception $e) {
 
-            $proximaData = date('d/m/Y H', strtotime($string));
-
-
-            $lucroDia = Niquelino::getLucroBitCoin(false, null, $proximaData);
-            array_push($lucros, $lucroDia);
-            array_push($horas, $hora.":00");
-            $hora++;
-            $contador--;
         }
 
-        $arrayLucro = array("lucros" => $lucros, "horas" => $horas);
-
-        return $this->resposta($arrayLucro, 'json');
+        return response()->json($arrayRetorno);
+//        return $this->resposta($arrayLucro, 'json');
     }
 
     public function getLucroHojeMini () {
