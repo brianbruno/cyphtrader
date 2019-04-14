@@ -129,6 +129,7 @@ class AdminController extends Controller {
 
     public function encontrarUsuario($id) {
 
+        $data = [];
         $users = User::where('id_user', '<>', null)->where('id', '<>', $id)->get();
         foreach ($users as $user) {
             $data[] = $user->id_user;
