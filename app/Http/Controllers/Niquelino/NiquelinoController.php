@@ -9,7 +9,7 @@
 namespace App\Http\Controllers\Niquelino;
 
 use App\Http\Controllers\Controller;
-
+use Illuminate\Support\Facades\Auth;
 
 class NiquelinoController extends Controller {
 
@@ -84,31 +84,17 @@ class NiquelinoController extends Controller {
         try {
             $lucros = [10, 25, 5, 9, 25, 5, 9, 25, 5, 9];
             $horas = ['07', '08', '09', '10', '08', '09', '10', '08', '09', '10'];
-            $contador = '23';
 
-            $hora = date('H', strtotime("-23 hour"));
+            if (Auth::user()->id_user != null) {
+                $lucros = $horas = [];
 
-            /*while(sizeof($horas)!= 24) {
+                $balancos = Auth::user()->bot()->balances()->orderBy('timestamp', 'desc')->limit(15)->get();
 
-                if($hora < 0) {
-                    $hora = $hora + 24;
+                foreach ($balancos as $balanco) {
+                    $lucros[] = $balanco->btc_value;
+                    $horas[] = $balanco->timestamp;
                 }
-                else if ($hora == 24) {
-                    $hora = '0';
-                }
-
-                $string = "-".$contador." hour";
-
-                $proximaData = date('d/m/Y H', strtotime($string));
-
-
-                $lucroDia = Niquelino::getLucroBitCoin(false, null, $proximaData);
-                $lucroDiaEmReais = Util::convertBtcToReal($lucroDia);
-                array_push($lucros, $lucroDiaEmReais['brl']);
-                array_push($horas, $hora.":00");
-                $hora++;
-                $contador--;
-            }*/
+            }
 
             $arrayRetorno['lucros'] = $lucros;
             $arrayRetorno['horas'] = $horas;

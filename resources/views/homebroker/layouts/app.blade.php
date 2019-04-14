@@ -87,6 +87,9 @@
                 @endif
             </div>
             @yield('content')
+
+            <button onclick='PushAlertCo.forceSubscribe()'>Subscribe</button>
+
         </div>
     </main>
 </div>
@@ -105,6 +108,23 @@
     $(function () {
         $('select').selectpicker();
     });
+</script>
+
+<script type="text/javascript">
+    (function(d, t) {
+        var g = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        g.src = "https://cdn.pushalert.co/integrate_f2791b4a76cef65aead710d0a6c399aa.js";
+        s.parentNode.insertBefore(g, s);
+    }(document, "script"));
+</script>
+
+<script>
+    (pushalertbyiw = window.pushalertbyiw || []).push(['onReady', onPAReady]);
+
+    function onPAReady() {
+        PushAlertCo.forceSubscribe(); //This will bring up the subscription opt-in, if it is not blocked. If blocked, it will show steps to unblock notifications.
+    }
 </script>
 
 @yield('script')

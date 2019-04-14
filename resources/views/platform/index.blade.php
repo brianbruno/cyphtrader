@@ -7,10 +7,10 @@
                 <div class="row mt-1">
                     <div class="col-lg-6">
                         <div class="card border-blue-grey-darken-4">
-                            <div class="card-header border-blue-grey-darken-4"><span class="plataforma-titulo-cartao">Lucro Niquelino</span><niquelino-mini-lucro-dia class="float-right"></niquelino-mini-lucro-dia></div>
+                            <div class="card-header border-blue-grey-darken-4"><span class="plataforma-titulo-cartao">Saldo Niquelino</span><niquelino-mini-lucro-dia class="float-right"></niquelino-mini-lucro-dia></div>
                             <div class="card-body plataforma-corpo-cartao">
                                 <i class="fab fa-bitcoin fa-5x float-right"></i>
-                                <h2 class="card-title">0,000000 BTC</h2>
+                                <h2 class="card-title">{{ $saldo }} BTC</h2>
                                 <p class="card-text">R$ 0,00 | U$ 0,00 | 0%</p>
                             </div>
                         </div>

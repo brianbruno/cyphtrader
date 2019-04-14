@@ -15,4 +15,11 @@ class UserSistema extends Authenticatable {
         return $this->belongsTo('App\User', 'id', 'id_user');
     }
 
+    public function balances() {
+        return $this->hasMany('App\Balance', 'bot_id', 'id');
+    }
+
+    public function operations() {
+        return $this->hasMany('App\Operation', 'bot_id', 'id');
+    }
 }
