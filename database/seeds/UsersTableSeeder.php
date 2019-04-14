@@ -14,7 +14,7 @@ class UsersTableSeeder extends Seeder
         $usuario = new \App\User();
         $usuario->id_user = null;
         $usuario->email = 'admin@admin.com';
-        $usuario->name = "administrador";
+        $usuario->name = "Administrador";
         $usuario->password = Hash::make('administrador');
         $usuario->cargo = 2;
         $usuario->save();
