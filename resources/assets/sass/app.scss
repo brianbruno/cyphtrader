@@ -14,6 +14,9 @@
 
 @import "~bootstrap-select/sass/bootstrap-select";
 
+@import "~noty/src/noty.scss";
+@import "~noty/src/themes/mint.scss";
+
 .navbar-laravel {
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);

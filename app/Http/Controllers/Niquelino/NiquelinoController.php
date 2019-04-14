@@ -70,37 +70,44 @@ class NiquelinoController extends Controller {
     }
 
     public function getLucroHojeMini () {
-        $lucros = [];
-        $horas = [];
-        $contador = '23';
+        $arrayRetorno = array('lucros' => [], 'horas' => [], 'status' => false, 'mensagem' => 'Não processado.');
 
-        $hora = date('H', strtotime("-23 hour"));
+        try {
+            $lucros = [10, 25, 5, 9, 25, 5, 9, 25, 5, 9];
+            $horas = ['07', '08', '09', '10', '08', '09', '10', '08', '09', '10'];
+            $contador = '23';
 
-        while(sizeof($horas)!= 24) {
+            $hora = date('H', strtotime("-23 hour"));
 
-            if($hora < 0) {
-                $hora = $hora + 24;
-            }
-            else if ($hora == 24) {
-                $hora = '0';
-            }
+            /*while(sizeof($horas)!= 24) {
 
-            $string = "-".$contador." hour";
+                if($hora < 0) {
+                    $hora = $hora + 24;
+                }
+                else if ($hora == 24) {
+                    $hora = '0';
+                }
 
-            $proximaData = date('d/m/Y H', strtotime($string));
+                $string = "-".$contador." hour";
+
+                $proximaData = date('d/m/Y H', strtotime($string));
 
 
-            $lucroDia = Niquelino::getLucroBitCoin(false, null, $proximaData);
-            $lucroDiaEmReais = Util::convertBtcToReal($lucroDia);
-            array_push($lucros, $lucroDiaEmReais['brl']);
-            array_push($horas, $hora.":00");
-            $hora++;
-            $contador--;
+                $lucroDia = Niquelino::getLucroBitCoin(false, null, $proximaData);
+                $lucroDiaEmReais = Util::convertBtcToReal($lucroDia);
+                array_push($lucros, $lucroDiaEmReais['brl']);
+                array_push($horas, $hora.":00");
+                $hora++;
+                $contador--;
+            }*/
+
+            $arrayRetorno = array('lucros' => $lucros, 'horas' => $horas);
+        } catch (\Exception $e) {
+            $arrayRetorno['mensagem'] = $e->getMessage();
         }
 
-        $arrayLucro = array("lucros" => $lucros, "horas" => $horas);
-
-        return $this->resposta($arrayLucro, 'json');
+        return response()->json($arrayRetorno);
+//        $this->resposta($arrayLucro, 'json');
     }
 
 }

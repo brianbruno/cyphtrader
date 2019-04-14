@@ -46,7 +46,8 @@
                         t.hideLoading();
                     },
                     error=>{
-                        console.log(error);
+                        this.$root.$emit('notificar', 'Ocorreu um erro ao buscar os dados. ', 'error');
+                        // console.log(error);
                     });
 
             },

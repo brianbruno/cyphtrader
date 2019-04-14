@@ -14,11 +14,9 @@
 
 Route::name('plataforma.')->group(function () {
 
-    Route::get('/', function () {
-        return view('platform.index');
-    })->name('dashboard')->middleware('auth');
-
     Route::middleware(['auth'])->group(function () {
+
+        Route::get('', 'HomeController@index')->name('dashboard');
 
         Route::namespace('Administrativo')->group(function () {
 

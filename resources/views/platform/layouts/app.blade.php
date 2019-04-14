@@ -10,8 +10,12 @@
 
     <title>{{ config('app.name', 'CyphTrader') }}</title>
 
-    <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @if(env('APACHE', true))
+        <link href="{{ asset('public/css/app.css') }}" rel="stylesheet">
+    @else
+        <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @endif
+
 
 </head>
 <body>
@@ -61,18 +65,20 @@
     </header>
     <main>
         <div class="container-fluid" id="app">
-
+            <notificacao></notificacao>
             <div class="container">
                 <br>
                 @if (!empty($resultado)  && $resultado['resultado'])
                     @if (empty($resultado['mensagem']))
-                        <div class="alert alert-success">
+                        <notificacao mensagem="Operação realizada com sucesso!" tipo="success"></notificacao>
+                        {{--<div class="alert alert-success">
                             <p><strong>Operação realizada com sucesso!</strong></p>
-                        </div>
+                        </div>--}}
                     @else
-                        <div class="alert alert-success">
+                        <notificacao mensagem="{{ $resultado['mensagem'] }}" tipo="success"></notificacao>
+                        {{--<div class="alert alert-success">
                             <p><strong>{{ $resultado['mensagem'] }}</strong></p>
-                        </div>
+                        </div>--}}
                     @endif
                 @endif
 
@@ -94,7 +100,12 @@
     </main>
 </div>
 <!-- Scripts -->
-<script src="{{ asset('js/app.js') }}"></script>
+@if(env('APACHE', true))
+    <script src="{{ asset('public/js/app.js') }}" defer></script>
+@else
+    <script src="{{ asset('js/app.js') }}" defer></script>
+@endif
+
 <!-- FontAwesome -->
 <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 

@@ -23,7 +23,7 @@
                 this.isLoading = true;
             },
             hideLoading(){
-                this.isLoading=false;
+                this.isLoading = false;
             },
             carregarDados () {
                 let t = this;
@@ -36,6 +36,7 @@
                         t.hideLoading();
                     },
                     error=>{
+                        this.$root.$emit('notificar', 'Ocorreu um erro ao buscar os dados. ' + error, 'error');
                         console.log(error);
                     });
 

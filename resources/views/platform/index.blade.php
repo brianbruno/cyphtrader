@@ -43,7 +43,7 @@
                             <div class="card-header border-blue-grey-darken-4 plataforma-titulo-cartao">Ordens em aberto</div>
                             <div class="card-body plataforma-corpo-cartao">
                                 <i class="fas fa-search fa-5x float-right"></i>
-                                <h1></h1>
+                                <h1>{{ $ordensAbertas }}</h1>
                             </div>
                         </div>
                     </div>

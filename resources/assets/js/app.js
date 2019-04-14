@@ -12,6 +12,8 @@ window.Vue = require('vue');
 window.Chart = require('chart.js');
 window.VueResource = require('vue-resource');
 
+window.Noty = require('noty');
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -21,6 +23,7 @@ window.VueResource = require('vue-resource');
 Vue.component('niquelino-lucro-dia', require('./components/charts/niquelino-lucro-dia.vue'));
 Vue.component('niquelino-lucro-hoje', require('./components/charts/niquelino-lucro-hoje.vue'));
 Vue.component('niquelino-mini-lucro-dia', require('./components/charts/niquelino-mini-lucro-dia.vue'));
+Vue.component('notificacao', require('./components/Notificacao.vue'));
 
 const app = new Vue({
     el: '#app'
