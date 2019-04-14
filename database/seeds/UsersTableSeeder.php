@@ -12,7 +12,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run() {
         $usuario = new \App\User();
-        $usuario->id_user = 0;
+        $usuario->id_user = null;
         $usuario->email = 'admin@admin.com';
         $usuario->name = "administrador";
         $usuario->password = Hash::make('administrador');

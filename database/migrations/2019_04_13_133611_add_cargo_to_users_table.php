@@ -15,7 +15,7 @@ class AddCargoToUsersTable extends Migration
     {
         Schema::table('users_portal', function (Blueprint $table) {
             $table->integer('cargo')->default(1)->after('email')->comment('Cargo do usuario. 1 - Normal');
-            $table->unsignedInteger('id_user')->default(null)->after('id')->comment('Usuario do sistema.');
+            $table->integer('id_user')->nullable(true)->default(null)->after('id')->comment('Usuario do sistema.');
             $table->foreign('id_user')->references('id')->on('users');
         });
     }
@@ -28,7 +28,9 @@ class AddCargoToUsersTable extends Migration
     public function down()
     {
         Schema::table('users_portal', function (Blueprint $table) {
-            //
+            $table->dropColumn('cargo');
+            $table->dropForeign(['id_user']);
+            $table->dropColumn('id_user');
         });
     }
 }
