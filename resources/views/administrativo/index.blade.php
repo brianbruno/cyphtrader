@@ -24,7 +24,6 @@
                                     <th scope="col">ID</th>
                                     <th scope="col">Nome</th>
                                     <th scope="col">E-mail</th>
-                                    <th scope="col" class="text-center">Ações</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -33,8 +32,6 @@
                                         <td>{{ $usuario->id }}</td>
                                         <td>{{ $usuario->name }}</td>
                                         <td>{{ $usuario->email }}</td>
-                                        <td class="text-center">
-                                            <a><i class="material-icons">close</i></a></td>
                                     </tr>
                                 @endforeach
                                 </tbody>
