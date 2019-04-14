@@ -68,29 +68,25 @@
             <notificacao></notificacao>
             <div class="container">
                 <br>
-                @if (!empty($resultado)  && $resultado['resultado'])
-                    @if (empty($resultado['mensagem']))
+                @if (!empty(session()->get('resultado')) && session()->get('resultado')['resultado'])
+                    @if (empty(session()->get('resultado')['mensagem']))
                         <notificacao mensagem="Operação realizada com sucesso!" tipo="success"></notificacao>
                         {{--<div class="alert alert-success">
                             <p><strong>Operação realizada com sucesso!</strong></p>
                         </div>--}}
                     @else
-                        <notificacao mensagem="{{ $resultado['mensagem'] }}" tipo="success"></notificacao>
+                        <notificacao mensagem="{{ session()->get('resultado')['mensagem'] }}" tipo="success"></notificacao>
                         {{--<div class="alert alert-success">
-                            <p><strong>{{ $resultado['mensagem'] }}</strong></p>
+                            <p><strong>{{ session()->get('resultado')['mensagem'] }}</strong></p>
                         </div>--}}
                     @endif
                 @endif
 
-                @if (!empty($resultado)  && !$resultado['resultado'])
-                    @if (empty($resultado['mensagem']))
-                        <div class="alert alert-success">
-                            <p><strong>Ocorreu um erro ao realizar a operação!</strong></p>
-                        </div>
+                @if (!empty(session()->get('resultado'))  && !session()->get('resultado')['resultado'])
+                    @if (empty(session()->get('resultado')['mensagem']))
+                        <notificacao mensagem="Ocorreu um erro ao realizar a operação." tipo="error"></notificacao>
                     @else
-                        <div class="alert alert-danger">
-                            <p><strong>{{ $resultado['mensagem'] }}</strong></p>
-                        </div>
+                        <notificacao mensagem="{{ session()->get('resultado')['mensagem'] }}" tipo="error"></notificacao>
                     @endif
 
                 @endif

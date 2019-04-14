@@ -22,8 +22,10 @@ Route::name('plataforma.')->group(function () {
 
             Route::prefix('administrativo')->group(function () {
                 Route::get('', 'AdminController@index')->name('administrativo');
+                Route::get('users/{id}', 'AdminController@encontrarUsuario')->name('administrativo');
                 Route::get('adicionar-usuario', 'AdminController@adicionarUsuario')->name('adicionar-usuario');
                 Route::post('salvar-usuario', 'AdminController@salvarUsuario')->name('usuario-salvar');
+                Route::post('editar-usuario', 'AdminController@editarUsuario');
             });
         });
 

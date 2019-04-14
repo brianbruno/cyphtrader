@@ -37,15 +37,16 @@ class NiquelinoController extends Controller {
     }
 
     public function getLucroHoje () {
+        $arrayRetorno = array('lucros' => [], 'horas' => [], 'status' => false, 'mensagem' => 'Não processado.');
 
         try {
-            $lucros = [];
-            $horas = [];
+            $lucros = [10, 25, 5, 9, 25, 5, 9, 25, 5, 9];
+            $horas = ['07', '08', '09', '10', '08', '09', '10', '08', '09', '10'];
             $contador = '23';
 
             $hora = date('H', strtotime("-23 hour"));
 
-            while(sizeof($horas)!= 24) {
+           /* while(sizeof($horas)!= 24) {
 
                 if($hora < 0) {
                     $hora = $hora + 24;
@@ -64,11 +65,13 @@ class NiquelinoController extends Controller {
                 array_push($horas, $hora.":00");
                 $hora++;
                 $contador--;
-            }
+            }*/
 
-            $arrayRetorno = array("lucros" => $lucros, "horas" => $horas);
+            $arrayRetorno['lucros'] = $lucros;
+            $arrayRetorno['horas'] = $horas;
+            $arrayRetorno['status'] = true;
         } catch (\Exception $e) {
-
+            $arrayRetorno['mensagem'] = $e->getMessage();
         }
 
         return response()->json($arrayRetorno);
@@ -107,7 +110,9 @@ class NiquelinoController extends Controller {
                 $contador--;
             }*/
 
-            $arrayRetorno = array('lucros' => $lucros, 'horas' => $horas);
+            $arrayRetorno['lucros'] = $lucros;
+            $arrayRetorno['horas'] = $horas;
+            $arrayRetorno['status'] = true;
         } catch (\Exception $e) {
             $arrayRetorno['mensagem'] = $e->getMessage();
         }

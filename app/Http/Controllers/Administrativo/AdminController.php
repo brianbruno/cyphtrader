@@ -27,7 +27,7 @@ class AdminController extends Controller {
     }
 
     public function adicionarUsuario() {
-        return view('administrativo.adicionar-usuario', ['usuariosSistema' => UserSistema::all()]);
+        return view('administrativo.adicionar-usuario');
     }
 
     public function salvarUsuario(Request $request) {
@@ -35,6 +35,7 @@ class AdminController extends Controller {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:60',
             'email' => 'required|string|email|max:255|unique:users_portal',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
         $return = array('resultado' => false, 'mensagem' => 'Não processado');
@@ -49,18 +50,24 @@ class AdminController extends Controller {
             try {
                 DB::beginTransaction();
 
-                $usuarioSistema = new UserSistema();
-                $usuarioSistema->name = $request->name;
-                $usuarioSistema->k = 'x';
-                $usuarioSistema->s = 'y';
-                $usuarioSistema->telegram_key = 'z';
-                $usuarioSistema->telegram_channel = 'canal_telegram';
-                $usuarioSistema->btcusdt_stop_value = '4717.00000000';
-                $usuarioSistema->active = '1';
-                $usuarioSistema->save();
+                if (!empty($request->criarRobo) && $request->criarRobo != null) {
+                    $usuarioSistema = new UserSistema();
+                    $usuarioSistema->name = $request->name;
+                    $usuarioSistema->k = 'x';
+                    $usuarioSistema->s = 'y';
+                    $usuarioSistema->telegram_key = 'z';
+                    $usuarioSistema->telegram_channel = 'canal_telegram';
+                    $usuarioSistema->btcusdt_stop_value = '4717.00000000';
+                    $usuarioSistema->active = '1';
+                    $usuarioSistema->save();
+
+                    $id_user = $usuarioSistema->id;
+                } else {
+                    $id_user = null;
+                }
 
                 $usuario = new User();
-                $usuario->id_user = $usuarioSistema->id;
+                $usuario->id_user = $id_user;
                 $usuario->email = $request->email;
                 $usuario->name = $request->name;
                 $usuario->password = Hash::make($request->password);
@@ -106,6 +113,59 @@ class AdminController extends Controller {
         }
 
         return view('administrativo.index', ['resultado' => $return, 'usuarios' => User::all()]);
+    }
+
+    public function encontrarUsuario($id) {
+        return view('administrativo.usuario', ['usuario' => User::where('id', $id)->first(), 'robos' => UserSistema::all()]);
+    }
+
+    public function editarUsuario(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id'    => 'required',
+            'name'  => 'required|max:60',
+            'email' => 'required|string|email|max:255',
+        ]);
+
+        $return = array('resultado' => false, 'mensagem' => 'Não processado');
+
+        if ($validator->fails()) {
+            $return['validator'] = $validator->errors();
+            $return['mensagem'] = 'Preencha todos os campos obrigatórios.';
+
+            $view = redirect()->to('administrativo/users/'.$request->id)->with(['resultado' => $return]);
+        } else {
+
+            try {
+                DB::beginTransaction();
+
+                $usuario = User::where('email', '=', $request->email)
+                    ->where('id', '<>', $request->id)->count();
+                if ($usuario > 0) {
+                    throw new \Exception("E-mail já cadastrado. Digite um e-mail diferente.");
+                }
+
+                $usuario = User::find($request->id);
+                $usuario->id_user = $request->id_user == 'null' ? null : $request->id_user;
+                $usuario->email = $request->email;
+                $usuario->name = $request->name;
+                $usuario->password = Hash::make($request->password);
+                $usuario->save();
+
+
+                DB::commit();
+                $return['resultado'] = true;
+                $return['mensagem'] = 'Usuário alterado com sucesso';
+                $view = redirect()->to('administrativo/users/'.$request->id)->with(['resultado' => $return, 'usuario' => User::where('id', $request->id)->first(), 'robos' => UserSistema::all()]);
+
+            } catch (\Exception $e) {
+
+                DB::rollBack();
+                $return['mensagem'] = $e->getMessage();
+                $view = redirect()->to('administrativo/users/'.$request->id)->with(['resultado' => $return]);
+            }
+        }
+
+        return $view;
     }
 
 }

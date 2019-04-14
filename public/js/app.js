@@ -31139,6 +31139,7 @@ __webpack_require__(165);
 window.Vue = __webpack_require__(166);
 window.Chart = __webpack_require__(170);
 window.VueResource = __webpack_require__(172);
+window.$ = window.jQuery = __webpack_require__(4);
 
 window.Noty = __webpack_require__(174);
 

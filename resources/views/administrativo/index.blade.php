@@ -6,7 +6,8 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header"> <div class="row">
+                    <div class="card-header">
+                        <div class="row">
                             <div class="col-sm-6 text-left">
                                 <h4>Administrativo</h4>
                             </div>
@@ -24,6 +25,7 @@
                                     <th scope="col">ID</th>
                                     <th scope="col">Nome</th>
                                     <th scope="col">E-mail</th>
+                                    <th scope="col" class="text-center">Ações</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -32,6 +34,7 @@
                                         <td>{{ $usuario->id }}</td>
                                         <td>{{ $usuario->name }}</td>
                                         <td>{{ $usuario->email }}</td>
+                                        <td class="text-center"><a href="{{ url('administrativo/users/'.$usuario->id) }}"><i class="material-icons">info</i></a></td>
                                     </tr>
                                 @endforeach
                                 </tbody>

@@ -11,6 +11,7 @@ require('bootstrap-select');
 window.Vue = require('vue');
 window.Chart = require('chart.js');
 window.VueResource = require('vue-resource');
+window.$ = window.jQuery = require('jquery');
 
 window.Noty = require('noty');
 

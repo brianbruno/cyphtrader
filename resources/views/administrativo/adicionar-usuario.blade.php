@@ -8,7 +8,7 @@
                     <div class="card-header">Usuário</div>
 
                     <div class="card-body">
-                        <form id="logout-form" action="{{ url('administrativo/salvar-usuario') }}" method="POST">
+                        <form action="{{ url('administrativo/salvar-usuario') }}" method="POST">
                             @csrf
                             <div class="form-group row">
                                 <div class="col-sm-12 col-md-6">
@@ -40,6 +40,18 @@
 
                                     <div>
                                         <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+
+                                <div class="col-sm-12 col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="criarRobo" id="criarRobo" checked>
+                                        <label class="form-check-label" for="criarRobo">
+                                            Criar robô
+                                        </label>
                                     </div>
                                 </div>
                             </div>
